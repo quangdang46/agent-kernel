@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { z } from "zod";
@@ -14,12 +15,14 @@ export const userPromptSubmitSchema = hookInputSchema.extend({
   hook_event_name: z.literal("UserPromptSubmit"),
   prompt: z.string(),
 });
+export type UserPromptSubmitInput = z.infer<typeof userPromptSubmitSchema>;
 
 export const stopHookSchema = hookInputSchema.extend({
   hook_event_name: z.literal("Stop"),
   stop_hook_active: z.boolean(),
   last_assistant_message: z.string(),
 });
+export type StopHookInput = z.infer<typeof stopHookSchema>;
 
 export const stopFailureHookSchema = hookInputSchema.extend({
   hook_event_name: z.literal("StopFailure"),
@@ -27,6 +30,7 @@ export const stopFailureHookSchema = hookInputSchema.extend({
   error_details: z.string().optional(),
   last_assistant_message: z.string().optional(),
 });
+export type StopFailureHookInput = z.infer<typeof stopFailureHookSchema>;
 
 const sessionStateSchema = z.object({
   sessionId: z.string(),
@@ -53,8 +57,31 @@ function stateRoot(): string {
   return resolve(process.cwd(), ".agent-kernel", "state");
 }
 
+export function sessionStateFileName(sessionId: string): string {
+  return `${createHash("sha256").update(sessionId).digest("hex")}.json`;
+}
+
+function legacySessionStateFileName(sessionId: string): string | null {
+  return /^[A-Za-z0-9._-]+$/.test(sessionId) ? `${sessionId}.json` : null;
+}
+
+function resolveStateFile(fileName: string): string {
+  return resolve(stateRoot(), fileName);
+}
+
 function statePath(sessionId: string): string {
-  return resolve(stateRoot(), `${sessionId}.json`);
+  return resolveStateFile(sessionStateFileName(sessionId));
+}
+
+function statePathCandidates(sessionId: string): string[] {
+  const paths = [statePath(sessionId)];
+  const legacyFileName = legacySessionStateFileName(sessionId);
+
+  if (legacyFileName) {
+    paths.push(resolveStateFile(legacyFileName));
+  }
+
+  return paths;
 }
 
 export async function writeSessionState(state: SessionState): Promise<void> {
@@ -63,16 +90,24 @@ export async function writeSessionState(state: SessionState): Promise<void> {
 }
 
 export async function readSessionState(sessionId: string): Promise<SessionState | null> {
-  try {
-    const content = await readFile(statePath(sessionId), "utf8");
-    return sessionStateSchema.parse(JSON.parse(content));
-  } catch {
-    return null;
+  for (const candidate of statePathCandidates(sessionId)) {
+    try {
+      const content = await readFile(candidate, "utf8");
+      return sessionStateSchema.parse(JSON.parse(content));
+    } catch {
+      continue;
+    }
   }
+
+  return null;
 }
 
 export async function deleteSessionState(sessionId: string): Promise<void> {
-  await rm(statePath(sessionId), { force: true });
+  await Promise.all(
+    statePathCandidates(sessionId).map((candidate) =>
+      rm(candidate, { force: true }),
+    ),
+  );
 }
 
 export function printJson(payload: unknown): void {

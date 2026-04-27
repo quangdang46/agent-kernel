@@ -3,12 +3,32 @@ import { getAnthropicContext } from "../memory/honcho.js";
 import {
   printJson,
   readJsonFromStdin,
+  type SessionState,
   truncate,
+  type UserPromptSubmitInput,
   userPromptSubmitSchema,
   writeSessionState,
 } from "./common.js";
 
-function renderContextBlock(snapshot: Awaited<ReturnType<typeof getAnthropicContext>>): string {
+export interface UserPromptSubmitResult {
+  suppressOutput: true;
+  hookSpecificOutput?: {
+    hookEventName: "UserPromptSubmit";
+    additionalContext: string;
+  };
+}
+
+export interface UserPromptSubmitDeps {
+  getContext?: typeof getAnthropicContext;
+  loadEnvIfAvailable?: typeof loadHonchoEnvIfAvailable;
+  loadNames?: typeof loadHonchoNames;
+  now?: () => string;
+  writeState?: (state: SessionState) => Promise<void>;
+}
+
+export function renderContextBlock(
+  snapshot: Awaited<ReturnType<typeof getAnthropicContext>>,
+): string {
   const lines: string[] = [];
 
   if (snapshot.summary) {
@@ -27,28 +47,34 @@ function renderContextBlock(snapshot: Awaited<ReturnType<typeof getAnthropicCont
   return lines.join("\n").trim();
 }
 
-async function main() {
-  const input = userPromptSubmitSchema.parse(await readJsonFromStdin());
-  const names = loadHonchoNames();
+export async function runUserPromptSubmit(
+  input: UserPromptSubmitInput,
+  deps: UserPromptSubmitDeps = {},
+): Promise<UserPromptSubmitResult> {
+  const loadNamesFn = deps.loadNames ?? loadHonchoNames;
+  const writeStateFn = deps.writeState ?? writeSessionState;
+  const loadEnvIfAvailableFn = deps.loadEnvIfAvailable ?? loadHonchoEnvIfAvailable;
+  const getContextFn = deps.getContext ?? getAnthropicContext;
+  const nowFn = deps.now ?? (() => new Date().toISOString());
+  const names = loadNamesFn();
 
-  await writeSessionState({
+  await writeStateFn({
     sessionId: input.session_id,
     prompt: input.prompt,
-    submittedAt: new Date().toISOString(),
+    submittedAt: nowFn(),
     userId: names.HONCHO_USER_NAME,
     assistantId: names.HONCHO_ASSISTANT_NAME,
   });
 
-  const env = loadHonchoEnvIfAvailable();
+  const env = loadEnvIfAvailableFn();
   if (!env) {
-    printJson({
+    return {
       suppressOutput: true,
-    });
-    return;
+    };
   }
 
   try {
-    const context = await getAnthropicContext(
+    const context = await getContextFn(
       {
         sessionId: input.session_id,
         assistantId: names.HONCHO_ASSISTANT_NAME,
@@ -60,26 +86,35 @@ async function main() {
 
     const additionalContext = renderContextBlock(context);
     if (!additionalContext) {
-      return;
+      return {
+        suppressOutput: true,
+      };
     }
 
-    printJson({
+    return {
       hookSpecificOutput: {
         hookEventName: "UserPromptSubmit",
         additionalContext,
       },
       suppressOutput: true,
-    });
+    };
   } catch {
-    printJson({
+    return {
       suppressOutput: true,
-    });
+    };
   }
 }
 
-main().catch((error) => {
-  process.stderr.write(
-    `${error instanceof Error ? error.message : String(error)}\n`,
-  );
-  process.exit(1);
-});
+async function main() {
+  const input = userPromptSubmitSchema.parse(await readJsonFromStdin());
+  printJson(await runUserPromptSubmit(input));
+}
+
+if (import.meta.main) {
+  main().catch((error) => {
+    process.stderr.write(
+      `${error instanceof Error ? error.message : String(error)}\n`,
+    );
+    process.exit(1);
+  });
+}

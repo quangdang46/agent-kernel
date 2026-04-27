@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import {
   deleteSessionState,
   readSessionState,
+  sessionStateFileName,
   truncate,
   writeSessionState,
 } from "../src/hooks/common.js";
@@ -48,5 +49,28 @@ describe("hook common helpers", () => {
   test("truncate keeps short strings and shortens long ones", () => {
     expect(truncate("short", 20)).toBe("short");
     expect(truncate("abcdefghij", 6)).toBe("abcde…");
+  });
+
+  test("hashes state filenames for complex session ids", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "agent-kernel-hooks-"));
+    tempDirs.push(dir);
+    process.chdir(dir);
+
+    const sessionId = "nested/session?id=42";
+
+    await writeSessionState({
+      sessionId,
+      prompt: "persist safely",
+      submittedAt: "2026-04-27T00:00:00.000Z",
+      userId: "quangdang",
+      assistantId: "Agent Kernel",
+    });
+
+    const stateDir = join(dir, ".agent-kernel", "state");
+    expect(readdirSync(stateDir)).toContain(sessionStateFileName(sessionId));
+    expect(existsSync(join(stateDir, "nested"))).toBe(false);
+
+    const state = await readSessionState(sessionId);
+    expect(state?.prompt).toBe("persist safely");
   });
 });

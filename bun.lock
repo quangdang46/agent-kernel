@@ -15,6 +15,9 @@
       },
     },
   },
+  "trustedDependencies": [
+    "agent-browser",
+  ],
   "packages": {
     "@honcho-ai/sdk": ["@honcho-ai/sdk@2.1.1", "", { "dependencies": { "zod": "4.0.0" } }, "sha512-1EgDchnK2bTllhUCNhH1PZbw65fExmTtY2sraqXc1O41o1gY4Rpqrl1XCo+7RfdcZo85N7vl461hqYCouhbR1A=="],
 

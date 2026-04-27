@@ -7,6 +7,7 @@
 - Claude Code compatibility first
 - Bun and TypeScript first
 - Project-local workflow skills instead of slash commands
+- Bounded experiment loops instead of long-running autonomous daemons
 
 ## Memory Rules
 
@@ -23,6 +24,7 @@
 - Use `$git-ship` for commit, push, PR, and stale branch cleanup requests.
 - Use `$pr-review` when the user asks for review, audit, or a risk pass on a diff.
 - Use `$browser-dogfood` when the user asks to inspect a real page, verify rendered output, or capture browser evidence.
+- Use `$autoloop` when the user wants measured optimization or repeated experiments against a clear metric.
 - Prefer extending `skills/` over adding project-specific slash commands.
 
 ## Local Agent Profiles
@@ -31,6 +33,7 @@
 - Use `agents/code-architect.md` before large or multi-file implementation work.
 - Use `agents/code-reviewer.md` after a meaningful implementation chunk is done.
 - Use `agents/spec-reviewer.md` to tighten a plan before coding starts.
+- Use `agents/experiment-runner.md` for a single measured trial inside a broader experiment loop.
 
 ## Build
 

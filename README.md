@@ -29,6 +29,7 @@ Current milestone:
 - project-local workflow skills for feature delivery, review, and git shipping
 - lightweight Playwright browse runtime for page inspection and screenshots
 - project-local agent profiles for exploration, design, review, and spec checks
+- bounded autoloop workflow for measured experiment runs
 
 ## Adapter Surface
 
@@ -59,6 +60,7 @@ The workflow layer lives in `skills/` instead of project-specific slash commands
 - `skills/pr-review` for bug-focused diff and PR review
 - `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
 - `skills/browser-dogfood` for real-page inspection, screenshots, and smoke QA
+- `skills/autoloop` for metric-driven experiment loops with explicit guardrails
 
 ## Team Layer
 
@@ -68,6 +70,15 @@ The team layer is documented in `agents/` as reusable role lenses:
 - `agents/code-architect.md` for implementation blueprints
 - `agents/code-reviewer.md` for post-change risk review
 - `agents/spec-reviewer.md` for plan and scope review before coding
+- `agents/experiment-runner.md` for single-hypothesis experiment execution
+
+## Research Layer
+
+The research layer is intentionally bounded:
+
+- `skills/autoloop` defines how to run measured improvement loops without turning the repo into a long-lived automation daemon
+- experiment logs live under `.agent-kernel/experiments/<tag>/`
+- winning experiments should still pass the normal repo gate before they are committed
 
 ## Browse Layer
 

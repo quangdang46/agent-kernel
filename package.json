@@ -1,0 +1,20 @@
+{
+  "name": "agent-kernel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clean-room Claude Code plugin scaffold with Honcho-backed memory",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "verify:honcho": "bun run src/scripts/verify-honcho.ts"
+  },
+  "dependencies": {
+    "@honcho-ai/sdk": "1.4.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "typescript": "^5.9.3"
+  }
+}

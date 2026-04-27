@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "honcho": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.honcho.dev",
+        "--header",
+        "Authorization:${AUTH_HEADER}",
+        "--header",
+        "X-Honcho-User-Name:${USER_NAME}",
+        "--header",
+        "X-Honcho-Assistant-Name:${ASSISTANT_NAME}",
+        "--header",
+        "X-Honcho-Workspace-ID:${WORKSPACE_ID}"
+      ],
+      "env": {
+        "AUTH_HEADER": "Bearer ${HONCHO_API_KEY}",
+        "USER_NAME": "${HONCHO_USER_NAME}",
+        "ASSISTANT_NAME": "${HONCHO_ASSISTANT_NAME}",
+        "WORKSPACE_ID": "${HONCHO_WORKSPACE_ID}"
+      }
+    }
+  }
+}

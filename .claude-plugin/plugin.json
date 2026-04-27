@@ -1,0 +1,17 @@
+{
+  "name": "agent-kernel",
+  "description": "Clean-room Claude Code plugin scaffold with Honcho-backed memory.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Trần Quang Đãng",
+    "email": "tranquangdang21@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "honcho",
+    "memory",
+    "agent"
+  ]
+}

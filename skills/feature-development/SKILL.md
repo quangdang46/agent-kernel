@@ -58,4 +58,4 @@ Drive feature work in ordered phases so implementation follows the repo's actual
 - For memory or hook changes, inspect `src/config.ts`, `src/memory/`, `src/hooks/`, and `test/` together.
 - For plugin capability changes, inspect `.claude-plugin/plugin.json`, `.claude/settings.json`, and `README.md`.
 - For workflow changes, inspect existing skills in `skills/` before adding a new one.
-- For plan quality checks before coding, apply the lens in `agents/spec-reviewer.md`.
+- For plan quality checks before coding, use `skills/spec-review` or apply the lens in `agents/spec-reviewer.md`.

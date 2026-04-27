@@ -27,6 +27,7 @@ Current milestone:
 - Claude Code hooks for prompt hydration and turn persistence
 - unit-tested hook runtime paths for no-op, recall, and persistence flows
 - project-local workflow skills for feature delivery, review, and git shipping
+- pre-implementation spec review workflow for plan tightening
 - lightweight Playwright browse runtime for page inspection and screenshots
 - project-local agent profiles for exploration, design, review, and spec checks
 - bounded autoloop workflow for measured experiment runs
@@ -57,6 +58,7 @@ Session state files are hashed before being written so Claude session IDs do not
 The workflow layer lives in `skills/` instead of project-specific slash commands:
 
 - `skills/feature-development` for discovery, design, implementation, and verification
+- `skills/spec-review` for implementation-readiness review before code is written
 - `skills/pr-review` for bug-focused diff and PR review
 - `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
 - `skills/browser-dogfood` for real-page inspection, screenshots, and smoke QA

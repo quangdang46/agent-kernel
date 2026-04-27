@@ -28,6 +28,7 @@ Current milestone:
 - unit-tested hook runtime paths for no-op, recall, and persistence flows
 - project-local workflow skills for feature delivery, review, and git shipping
 - lightweight Playwright browse runtime for page inspection and screenshots
+- project-local agent profiles for exploration, design, review, and spec checks
 
 ## Adapter Surface
 
@@ -58,6 +59,15 @@ The workflow layer lives in `skills/` instead of project-specific slash commands
 - `skills/pr-review` for bug-focused diff and PR review
 - `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
 - `skills/browser-dogfood` for real-page inspection, screenshots, and smoke QA
+
+## Team Layer
+
+The team layer is documented in `agents/` as reusable role lenses:
+
+- `agents/code-explorer.md` for tracing existing flows before changes
+- `agents/code-architect.md` for implementation blueprints
+- `agents/code-reviewer.md` for post-change risk review
+- `agents/spec-reviewer.md` for plan and scope review before coding
 
 ## Browse Layer
 

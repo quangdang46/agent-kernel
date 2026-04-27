@@ -25,6 +25,13 @@
 - Use `$browser-dogfood` when the user asks to inspect a real page, verify rendered output, or capture browser evidence.
 - Prefer extending `skills/` over adding project-specific slash commands.
 
+## Local Agent Profiles
+
+- Use `agents/code-explorer.md` as the discovery lens for unfamiliar flows.
+- Use `agents/code-architect.md` before large or multi-file implementation work.
+- Use `agents/code-reviewer.md` after a meaningful implementation chunk is done.
+- Use `agents/spec-reviewer.md` to tighten a plan before coding starts.
+
 ## Build
 
 ```bash

@@ -9,7 +9,7 @@
 - Project-local workflow skills instead of slash commands
 - `agent-browser` is the browse surface for live web automation
 - Bounded experiment loops instead of long-running autonomous daemons
-- `plugins/` follows the holyclaude-style focused plugin-pack layout
+- `plugins/` provides focused workflow packs that mirror the repo-local skill surface
 
 ## Memory Rules
 

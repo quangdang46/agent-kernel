@@ -1,109 +1,191 @@
 # Agent Kernel
 
-`agent-kernel` is a clean-room Claude Code plugin scaffold that uses Honcho for memory and user insight retrieval.
+`agent-kernel` is a Claude Code plugin scaffold that combines Honcho-backed memory, a skill-first workflow layer, focused plugin packs, live browser automation, and bounded experiment loops into one repository.
 
-## Why Honcho
+## Architecture
 
-- Honcho exposes both an MCP integration and a TypeScript SDK.
-- The MCP path gives Claude Code tool access for memory operations.
-- The SDK path lets local runtime code store turns and query synthesized user insights.
+```
+┌──────────────────────────────────────────────────────┐
+│  Layer 5: Research      skills/autoloop             │
+│  Metric-driven experiment loops with hard guardrails │
+├──────────────────────────────────────────────────────┤
+│  Layer 4: Team          agents/*.md                 │
+│  Local role lenses for discovery, design, and review│
+├──────────────────────────────────────────────────────┤
+│  Layer 3: Workflow      skills/*                    │
+│  Spec review, feature delivery, review, and shipping│
+├──────────────────────────────────────────────────────┤
+│  Layer 2: Plugin Packs  plugins/*                   │
+│  Focused installable workflow packs                 │
+├──────────────────────────────────────────────────────┤
+│  Layer 1: Browser       agent-browser               │
+│  Live browser automation and screenshot capture     │
+├──────────────────────────────────────────────────────┤
+│  Layer 0: Memory        Honcho + Claude hooks       │
+│  Prompt recall, turn persistence, working memory    │
+└──────────────────────────────────────────────────────┘
+```
 
-Primary references:
+## What You Get
 
-- `https://docs.honcho.dev/v2/integrations/mcp`
-- `https://docs.honcho.dev/v3/documentation/introduction/quickstart`
-- `https://docs.honcho.dev/v3/documentation/reference/sdk`
+| Surface | Count | Examples |
+|---|---:|---|
+| Repo-local skills | 6 | `feature-development`, `spec-review`, `pr-review`, `git-ship`, `agent-browser`, `autoloop` |
+| Plugin packs | 3 | `feature-dev`, `pr-review-toolkit`, `commit-commands` |
+| Agent profiles | 5 | `code-explorer`, `code-architect`, `code-reviewer`, `spec-reviewer`, `experiment-runner` |
+| Hook events | 4 | `Setup`, `UserPromptSubmit`, `Stop`, `StopFailure` |
+| Memory adapter exports | 6 | `recordTurn()`, `getAnthropicContext()`, `askUserModel()` |
 
-## Project Scope
+## The Problem
 
-This repository intentionally starts smaller than `holyclaude`.
+Most Claude Code setups start as one-off scripts:
 
-Current milestone:
+- memory is bolted on separately from workflow
+- browser automation is a second toolchain with separate conventions
+- review and shipping are ad hoc
+- plugin packaging drifts away from the repo's real development surface
 
-- plugin manifest
-- Honcho MCP config
-- TypeScript memory adapter scaffold
-- local setup and verification scripts
-- Claude Code hooks for prompt hydration and turn persistence
-- unit-tested hook runtime paths for no-op, recall, and persistence flows
-- project-local workflow skills for feature delivery, review, and git shipping
-- pre-implementation spec review workflow for plan tightening
-- agent-browser-backed browse workflow for live page automation
-- project-local agent profiles for exploration, design, review, and spec checks
-- bounded autoloop workflow for measured experiment runs
-- holyclaude-style plugin layer with focused installable workflow packs
+## The Solution
 
-## Adapter Surface
+`agent-kernel` keeps the layers close together:
 
-The Honcho adapter currently exposes:
+- Honcho handles recall and persistence
+- skills define how work is routed
+- local agent profiles define review and design lenses
+- plugin packs package only the workflow slices worth installing separately
+- `agent-browser` handles live web interaction without a custom browser wrapper
 
-- `recordTurn()` to persist a user/assistant exchange
-- `getAnthropicContext()` to retrieve a token-bounded context window
-- `getSessionWorkingMemory()` to inspect a session-scoped representation
-- `askUserModel()` to query Honcho's synthesized model of a user
-- `waitForDerivedMemory()` to block until derivation work finishes
+## Why Use It
 
-## Hook Flow
+| Need | What Agent Kernel Does |
+|---|---|
+| Persistent context | Rehydrates prompt context and persists turns through Claude hook events |
+| Deliberate implementation flow | Routes work through `spec-review`, `feature-development`, `pr-review`, and `git-ship` |
+| Browser evidence | Uses `agent-browser` for page inspection, interaction, and screenshots |
+| Installable subsets | Packages workflow surfaces under `plugins/` without duplicating the whole repo |
+| Measured optimization | Runs bounded experiment loops through `autoloop` instead of open-ended daemons |
 
-Project hooks live in [.claude/settings.json](./.claude/settings.json).
+## Quick Start
 
-- `Setup` bootstraps dependencies and local runtime directories when the plugin is installed into a project
-- `UserPromptSubmit` stores the latest prompt in local state and, when Honcho is configured, injects recalled context back into Claude Code
-- `Stop` persists the finished user/assistant turn into Honcho and waits for derivation to settle
-- `StopFailure` clears local state so interrupted runs do not poison the next turn
+### 1. Clone and configure
 
-Ephemeral hook state is stored under `.agent-kernel/state/` and is gitignored.
-Session state files are hashed before being written so Claude session IDs do not leak into filesystem paths.
+```bash
+git clone https://github.com/quangdang46/agent-kernel.git
+cd agent-kernel
+cp .env.example .env
+```
 
-## Workflow Skills
+Fill in `HONCHO_API_KEY` and the optional Honcho identity fields in `.env`.
 
-The workflow layer lives in `skills/` instead of project-specific slash commands:
+### 2. Bootstrap the runtime
 
-- `skills/feature-development` for discovery, design, implementation, and verification
-- `skills/spec-review` for implementation-readiness review before code is written
-- `skills/pr-review` for bug-focused diff and PR review
-- `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
-- `skills/agent-browser` for live page inspection, interaction, and screenshots
-- `skills/autoloop` for metric-driven experiment loops with explicit guardrails
+```bash
+./setup
+```
 
-## Plugin Layer
+What it does:
 
-The plugin layer follows the same broad organization as `holyclaude`: focused packs under `plugins/` that can be installed independently.
+1. Ensures Bun is available
+2. Installs project dependencies
+3. Creates local runtime directories under `.agent-kernel/`
+4. Installs the `agent-browser` runtime
 
-- `plugins/feature-dev` packages feature delivery plus spec review
-- `plugins/pr-review-toolkit` packages the review surface
-- `plugins/commit-commands` packages git shipping workflows
+The same bootstrap path also runs through `hooks/setup.sh` when Claude Code triggers the `Setup` lifecycle hook.
 
-Browse and research remain separate top-level layers in this repo instead of being repackaged as plugins.
+### 3. Verify the working surface
 
-## Team Layer
+```bash
+bun run clean
+bun run build
+bun run check
+bun test
+bun run verify:browse
+```
 
-The team layer is documented in `agents/` as reusable role lenses:
+To verify Honcho as well:
 
-- `agents/code-explorer.md` for tracing existing flows before changes
-- `agents/code-architect.md` for implementation blueprints
-- `agents/code-reviewer.md` for post-change risk review
-- `agents/spec-reviewer.md` for plan and scope review before coding
-- `agents/experiment-runner.md` for single-hypothesis experiment execution
+```bash
+bun run verify:honcho
+```
 
-## Research Layer
+This requires a real `HONCHO_API_KEY`.
 
-The research layer is intentionally bounded:
+### 4. Use the workflow layer
 
-- `skills/autoloop` defines how to run measured improvement loops without turning the repo into a long-lived automation daemon
-- experiment logs live under `.agent-kernel/experiments/<tag>/`
-- winning experiments should still pass the normal repo gate before they are committed
+Example prompts inside Claude Code:
 
-## Browse Layer
+```text
+$spec-review review this plan before I touch the hook pipeline
+$feature-development add a new memory-backed operator workflow
+$agent-browser inspect the deployed login flow and capture evidence
+$pr-review audit the current diff for regressions
+$git-ship commit and push the current work
+```
 
-The browse layer uses `agent-browser`, which provides:
+## Layer Guide
 
-- page navigation through a persistent browser session
-- `snapshot -i` refs for low-token interaction with live pages
-- direct `click`, `fill`, `wait`, `get`, and `screenshot` commands
-- project-local screenshot defaults under `.agent-kernel/artifacts/`
+### Memory Layer
 
-Commands:
+The memory layer is powered by Honcho through `.mcp.json` and the hook entrypoints in `.claude/settings.json`.
+
+Current adapter surface:
+
+- `recordTurn()` persists a user and assistant exchange
+- `getAnthropicContext()` fetches token-bounded recall for prompt hydration
+- `getSessionWorkingMemory()` reads a session-scoped representation
+- `askUserModel()` queries Honcho's synthesized understanding of a user
+- `waitForDerivedMemory()` waits for derivation to settle
+- `createHonchoClient()` exposes the underlying SDK client constructor
+
+Relevant files:
+
+- `src/memory/honcho.ts`
+- `src/hooks/user-prompt-submit.ts`
+- `src/hooks/stop.ts`
+- `.mcp.json`
+
+### Workflow Layer
+
+The workflow layer lives in `skills/` instead of project-specific slash commands.
+
+| Skill | Use it for |
+|---|---|
+| `skills/spec-review` | Tightening plans before implementation |
+| `skills/feature-development` | Discovery, design, implementation, and verification |
+| `skills/pr-review` | Bug-focused diff and branch review |
+| `skills/git-ship` | Commit, push, PR, and stale branch cleanup |
+| `skills/agent-browser` | Real browser interaction and screenshots |
+| `skills/autoloop` | Bounded experiment loops with explicit metrics |
+
+### Team Layer
+
+The team layer is intentionally lightweight and local.
+
+| Agent | Responsibility |
+|---|---|
+| `agents/code-explorer.md` | Trace current flows before changes |
+| `agents/code-architect.md` | Turn findings into a concrete implementation blueprint |
+| `agents/code-reviewer.md` | Catch correctness and regression risk |
+| `agents/spec-reviewer.md` | Tighten scope and acceptance criteria before coding |
+| `agents/experiment-runner.md` | Execute one experiment trial and report `keep` or `discard` |
+
+### Plugin Layer
+
+`plugins/` contains focused installable packs that mirror the repo-local workflow surface instead of introducing a second command model.
+
+| Plugin pack | Includes |
+|---|---|
+| `plugins/feature-dev` | Feature delivery plus spec review, with explorer, architect, reviewer, and spec-reviewer agents |
+| `plugins/pr-review-toolkit` | Review workflow plus code-reviewer agent |
+| `plugins/commit-commands` | Shipping workflow via `git-ship` |
+
+Browse and research stay as top-level skills rather than being repackaged into plugin packs.
+
+### Browser Layer
+
+The browser layer uses `agent-browser` directly.
+
+Common commands:
 
 ```bash
 bun run browse -- open https://example.com
@@ -111,53 +193,138 @@ bun run browse -- snapshot -i
 bun run browse -- get text body
 bun run browse -- screenshot example.png
 bun run browse -- close
-bun run verify:browse
 ```
 
-For deeper usage patterns:
+For the full native usage guide:
 
 ```bash
 bun run browse -- skills get core --full
 ```
 
-## Environment
+### Research Layer
 
-Copy `.env.example` to `.env` and fill:
+`skills/autoloop` defines a bounded experiment loop:
 
-```bash
-HONCHO_API_KEY=...
-HONCHO_WORKSPACE_ID=agent-kernel
-HONCHO_ENVIRONMENT=production
-HONCHO_USER_NAME=quangdang
-HONCHO_ASSISTANT_NAME="Agent Kernel"
+- choose a metric and direction
+- define editable files
+- run one hypothesis at a time
+- keep only verified wins
+- log trials under `.agent-kernel/experiments/<tag>/`
+
+## Hook Lifecycle
+
+Project hooks live in [`.claude/settings.json`](./.claude/settings.json).
+
+| Hook | What it does |
+|---|---|
+| `Setup` | Bootstraps dependencies and local runtime directories |
+| `UserPromptSubmit` | Stores prompt state and injects Honcho recall when available |
+| `Stop` | Persists the finished turn to Honcho and waits for derivation |
+| `StopFailure` | Clears local state after interrupted or failed runs |
+
+Ephemeral hook state lives under `.agent-kernel/state/` and is gitignored. Session IDs are hashed before hitting the filesystem.
+
+## File Structure
+
+```text
+agent-kernel/
+├── .claude-plugin/plugin.json
+├── .claude/settings.json
+├── .mcp.json
+├── agents/
+├── hooks/
+│   └── setup.sh
+├── plugins/
+│   ├── commit-commands/
+│   ├── feature-dev/
+│   └── pr-review-toolkit/
+├── scripts/
+│   └── setup-runtime.sh
+├── skills/
+│   ├── agent-browser/
+│   ├── autoloop/
+│   ├── feature-development/
+│   ├── git-ship/
+│   ├── pr-review/
+│   └── spec-review/
+├── src/
+│   ├── hooks/
+│   ├── memory/
+│   └── scripts/
+├── test/
+├── setup
+└── README.md
 ```
 
-## Setup
+## Verification and Troubleshooting
+
+### `bun run verify:browse` reports a warning
+
+The wrapper in `src/scripts/verify-browse.ts` only fails on real doctor failures. Warnings are printed but do not break the check by themselves.
+
+### `bun run verify:honcho` fails
+
+This usually means `HONCHO_API_KEY` is missing or invalid.
+
+### `./setup` says Bun is required
+
+If automatic install fails, install Bun manually from `https://bun.sh`, then rerun `./setup`.
+
+### The browser runtime is missing
+
+Run:
 
 ```bash
-./setup
+bun run browse -- install
 ```
 
-The same bootstrap path also runs through `hooks/setup.sh` when Claude Code triggers the `Setup` lifecycle hook.
+### Old build artifacts show up in `dist/`
 
-## Verification
+Run:
 
 ```bash
 bun run clean
-bun run check
 bun run build
-bun test
-bun run verify:browse
-bun run verify:honcho
 ```
 
-## Local Honcho CLI
+## Comparison
 
-For direct smoke tests without waiting for Claude Code hooks:
+| Approach | Strength | Weakness |
+|---|---|---|
+| Raw Claude Code plugin skeleton | Minimal moving parts | No integrated memory, workflow, browser, or review surface |
+| Single-purpose memory setup | Strong recall | Workflow, browser, and shipping still need to be assembled separately |
+| One monolithic agent bundle | Broad surface area | Harder to reason about, harder to trim, easier to drift |
+| `agent-kernel` | Small layered stack with skill-first routing and installable workflow packs | Intentionally narrower than a kitchen-sink environment |
 
-```bash
-bun run honcho -- record --session demo-1 --user-message "hello" --assistant-message "hi"
-bun run honcho -- context --session demo-1 --tokens 1500
-bun run honcho -- working-rep --session demo-1 --peer quangdang
-bun run honcho -- ask --user-id quangdang --query "What does this user care about?"
-```
+## Limitations
+
+- This is a scaffold and working stack, not a giant all-in-one distribution.
+- Honcho verification requires real credentials.
+- Plugin packs currently package workflow slices only; they do not replace the repo-local browse or research layers.
+- The public TypeScript surface is memory-focused; browser automation is exposed as a CLI workflow rather than a local SDK wrapper.
+
+## FAQ
+
+### Is this a library or a plugin?
+
+Both, but mostly a plugin scaffold. The repo contains a Claude plugin manifest plus a small exported TypeScript memory surface.
+
+### Do I need Honcho to use the whole repo?
+
+You need Honcho for memory recall and turn persistence. The workflow, browser, plugin-pack, and experiment surfaces can still be explored without it.
+
+### Why is browser automation not exported from `src/index.ts`?
+
+The browser layer is intentionally CLI-first through `agent-browser`. That keeps it closer to the real operator flow and avoids maintaining a second browser abstraction.
+
+### Why are plugin packs duplicated under `plugins/` instead of referenced indirectly?
+
+Because each pack is meant to stand on its own when installed as a focused workflow slice.
+
+### Should I use the plugin packs or the repo-local `skills/` directly?
+
+Use the repo-local skills when working inside this repository. Use the plugin packs when you want to install only one slice elsewhere.
+
+## License
+
+MIT

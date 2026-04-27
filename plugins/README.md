@@ -1,6 +1,6 @@
 # Plugin Packs
 
-This directory packages the installable workflow layer in the same broad shape as `holyclaude`: small focused plugin packs that can be enabled independently.
+This directory packages the installable workflow layer as small focused plugin packs that can be enabled independently.
 
 Included packs:
 

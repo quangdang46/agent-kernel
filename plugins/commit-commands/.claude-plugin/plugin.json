@@ -1,0 +1,9 @@
+{
+  "name": "commit-commands",
+  "version": "0.1.0",
+  "description": "Focused git delivery plugin for commit, push, pull request, and cleanup workflows",
+  "author": {
+    "name": "Trần Quang Đãng",
+    "email": "tranquangdang21@gmail.com"
+  }
+}

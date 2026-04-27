@@ -1,0 +1,9 @@
+{
+  "name": "pr-review-toolkit",
+  "version": "0.1.0",
+  "description": "Risk-focused pull request review plugin with actionable correctness and regression checks",
+  "author": {
+    "name": "Trần Quang Đãng",
+    "email": "tranquangdang21@gmail.com"
+  }
+}

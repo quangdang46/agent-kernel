@@ -1,0 +1,9 @@
+{
+  "name": "feature-dev",
+  "version": "0.1.0",
+  "description": "Structured feature delivery plugin with discovery, spec review, architecture, implementation, and review guidance",
+  "author": {
+    "name": "Trần Quang Đãng",
+    "email": "tranquangdang21@gmail.com"
+  }
+}

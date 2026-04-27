@@ -9,6 +9,7 @@
 - Project-local workflow skills instead of slash commands
 - `agent-browser` is the browse surface for live web automation
 - Bounded experiment loops instead of long-running autonomous daemons
+- `plugins/` follows the holyclaude-style focused plugin-pack layout
 
 ## Memory Rules
 
@@ -45,3 +46,10 @@ bun run build
 bun test
 bun run verify:browse
 ```
+
+## Plugin Packs
+
+- `plugins/feature-dev` mirrors the feature planning and implementation surface.
+- `plugins/pr-review-toolkit` mirrors the review surface.
+- `plugins/commit-commands` mirrors the shipping surface.
+- Keep browse and research in top-level skills instead of plugin packs.

@@ -31,6 +31,7 @@ Current milestone:
 - agent-browser-backed browse workflow for live page automation
 - project-local agent profiles for exploration, design, review, and spec checks
 - bounded autoloop workflow for measured experiment runs
+- holyclaude-style plugin layer with focused installable workflow packs
 
 ## Adapter Surface
 
@@ -63,6 +64,16 @@ The workflow layer lives in `skills/` instead of project-specific slash commands
 - `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
 - `skills/agent-browser` for live page inspection, interaction, and screenshots
 - `skills/autoloop` for metric-driven experiment loops with explicit guardrails
+
+## Plugin Layer
+
+The plugin layer follows the same broad organization as `holyclaude`: focused packs under `plugins/` that can be installed independently.
+
+- `plugins/feature-dev` packages feature delivery plus spec review
+- `plugins/pr-review-toolkit` packages the review surface
+- `plugins/commit-commands` packages git shipping workflows
+
+Browse and research remain separate top-level layers in this repo instead of being repackaged as plugins.
 
 ## Team Layer
 

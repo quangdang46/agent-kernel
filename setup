@@ -4,11 +4,5 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
-if ! command -v bun >/dev/null 2>&1; then
-  echo "bun is required: https://bun.sh"
-  exit 1
-fi
-
-bun install
-bun run browse -- install
+bash "$ROOT/scripts/setup-runtime.sh" cli
 echo "Setup complete."

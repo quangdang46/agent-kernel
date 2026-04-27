@@ -1,5 +1,16 @@
 {
   "hooks": {
+    "Setup": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-$PWD}\" && bash hooks/setup.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [

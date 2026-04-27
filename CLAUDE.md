@@ -41,6 +41,7 @@
 ## Build
 
 ```bash
+bun run clean
 bun run check
 bun run build
 bun test

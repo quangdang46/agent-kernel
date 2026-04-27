@@ -5,11 +5,12 @@
   "description": "Clean-room Claude Code plugin scaffold with Honcho-backed memory",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
     "check": "tsc --noEmit -p tsconfig.json",
+    "clean": "rm -rf dist",
     "test": "bun test",
     "browse": "agent-browser --screenshot-dir .agent-kernel/artifacts --max-output 12000",
-    "verify:browse": "agent-browser doctor",
+    "verify:browse": "bun run src/scripts/verify-browse.ts",
     "verify:honcho": "bun run src/scripts/verify-honcho.ts",
     "honcho": "bun run src/scripts/honcho-cli.ts"
   },

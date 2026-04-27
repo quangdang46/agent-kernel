@@ -47,6 +47,7 @@ The Honcho adapter currently exposes:
 
 Project hooks live in [.claude/settings.json](./.claude/settings.json).
 
+- `Setup` bootstraps dependencies and local runtime directories when the plugin is installed into a project
 - `UserPromptSubmit` stores the latest prompt in local state and, when Honcho is configured, injects recalled context back into Claude Code
 - `Stop` persists the finished user/assistant turn into Honcho and waits for derivation to settle
 - `StopFailure` clears local state so interrupted runs do not poison the next turn
@@ -137,9 +138,12 @@ HONCHO_ASSISTANT_NAME="Agent Kernel"
 ./setup
 ```
 
+The same bootstrap path also runs through `hooks/setup.sh` when Claude Code triggers the `Setup` lifecycle hook.
+
 ## Verification
 
 ```bash
+bun run clean
 bun run check
 bun run build
 bun test

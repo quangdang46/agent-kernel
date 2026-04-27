@@ -26,6 +26,7 @@ Current milestone:
 - local setup and verification scripts
 - Claude Code hooks for prompt hydration and turn persistence
 - unit-tested hook runtime paths for no-op, recall, and persistence flows
+- project-local workflow skills for feature delivery, review, and git shipping
 
 ## Adapter Surface
 
@@ -47,6 +48,14 @@ Project hooks live in [.claude/settings.json](./.claude/settings.json).
 
 Ephemeral hook state is stored under `.agent-kernel/state/` and is gitignored.
 Session state files are hashed before being written so Claude session IDs do not leak into filesystem paths.
+
+## Workflow Skills
+
+The workflow layer lives in `skills/` instead of project-specific slash commands:
+
+- `skills/feature-development` for discovery, design, implementation, and verification
+- `skills/pr-review` for bug-focused diff and PR review
+- `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
 
 ## Environment
 

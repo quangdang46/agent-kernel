@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Ship"
+  short_description: "Commit, push, PR, and branch cleanup"
+  default_prompt: "Use $git-ship to prepare, commit, push, and open a pull request for these changes."

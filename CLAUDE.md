@@ -6,6 +6,7 @@
 - Honcho is the only memory backend in scope
 - Claude Code compatibility first
 - Bun and TypeScript first
+- Project-local workflow skills instead of slash commands
 
 ## Memory Rules
 
@@ -15,6 +16,13 @@
 - Do not add `claude-mem` or `mem0` dependencies
 - Claude Code hook entrypoints live in `src/hooks/`
 - Project hook config lives in `.claude/settings.json`
+
+## Skill Routing
+
+- Use `$feature-development` for non-trivial features, workflow extensions, and multi-file behavior changes.
+- Use `$git-ship` for commit, push, PR, and stale branch cleanup requests.
+- Use `$pr-review` when the user asks for review, audit, or a risk pass on a diff.
+- Prefer extending `skills/` over adding project-specific slash commands.
 
 ## Build
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Review"
+  short_description: "Review a PR or diff for real issues"
+  default_prompt: "Use $pr-review to audit this diff or pull request for bugs, regressions, and missing tests."

@@ -24,6 +24,7 @@ Current milestone:
 - Honcho MCP config
 - TypeScript memory adapter scaffold
 - local setup and verification scripts
+- Claude Code hooks for prompt hydration and turn persistence
 
 ## Adapter Surface
 
@@ -34,6 +35,16 @@ The Honcho adapter currently exposes:
 - `getSessionWorkingMemory()` to inspect a session-scoped representation
 - `askUserModel()` to query Honcho's synthesized model of a user
 - `waitForDerivedMemory()` to block until derivation work finishes
+
+## Hook Flow
+
+Project hooks live in [.claude/settings.json](./.claude/settings.json).
+
+- `UserPromptSubmit` stores the latest prompt in local state and, when Honcho is configured, injects recalled context back into Claude Code
+- `Stop` persists the finished user/assistant turn into Honcho and waits for derivation to settle
+- `StopFailure` clears local state so interrupted runs do not poison the next turn
+
+Ephemeral hook state is stored under `.agent-kernel/state/` and is gitignored.
 
 ## Environment
 

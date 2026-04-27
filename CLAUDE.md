@@ -13,6 +13,8 @@
 - Use `getAnthropicContext()` to reconstruct prompt history
 - Use `askUserModel()` or `getSessionWorkingMemory()` for user-specific recall
 - Do not add `claude-mem` or `mem0` dependencies
+- Claude Code hook entrypoints live in `src/hooks/`
+- Project hook config lives in `.claude/settings.json`
 
 ## Build
 

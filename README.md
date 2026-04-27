@@ -1,6 +1,19 @@
+<div align="center">
+
 # Agent Kernel
 
-`agent-kernel` is a Claude Code plugin scaffold that combines Honcho-backed memory, a skill-first workflow layer, focused plugin packs, live browser automation, and bounded experiment loops into one repository.
+**Layered Claude Code scaffolding with Honcho memory, skill-first workflows, focused plugin packs, browser automation, and bounded experiment loops.**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-F4D35E.svg)](./LICENSE)
+[![Runtime: Bun](https://img.shields.io/badge/runtime-Bun-111827?logo=bun)](https://bun.sh)
+[![Memory: Honcho](https://img.shields.io/badge/memory-Honcho-0F766E.svg)](https://docs.honcho.dev)
+[![Browser: agent-browser](https://img.shields.io/badge/browser-agent--browser-2563EB.svg)](https://github.com/vercel-labs/agent-browser)
+
+[Quick Start](#quick-start) • [Layer Guide](#layer-guide) • [Hook Lifecycle](#hook-lifecycle) • [Verification](#verification-and-troubleshooting)
+
+</div>
+
+> Most Claude Code setups split memory, review, browser automation, and shipping across separate tools. `agent-kernel` keeps those layers in one repo-local stack that is easier to install, inspect, and evolve.
 
 ## Architecture
 
@@ -35,6 +48,13 @@
 | Agent profiles | 5 | `code-explorer`, `code-architect`, `code-reviewer`, `spec-reviewer`, `experiment-runner` |
 | Hook events | 4 | `Setup`, `UserPromptSubmit`, `Stop`, `StopFailure` |
 | Memory adapter exports | 6 | `recordTurn()`, `getAnthropicContext()`, `askUserModel()` |
+
+## Before and After
+
+```diff
+- One-off scripts, manual review, and no shared memory between sessions
++ Memory recall, explicit workflow routing, browser evidence, and bounded experimentation in one stack
+```
 
 ## The Problem
 
@@ -324,6 +344,10 @@ Because each pack is meant to stand on its own when installed as a focused workf
 ### Should I use the plugin packs or the repo-local `skills/` directly?
 
 Use the repo-local skills when working inside this repository. Use the plugin packs when you want to install only one slice elsewhere.
+
+## Contributing
+
+Issues and focused pull requests are welcome. Keep changes narrow, include the verification commands you ran, and update the relevant `skills/`, `plugins/`, or `agents/` docs when behavior changes.
 
 ## License
 

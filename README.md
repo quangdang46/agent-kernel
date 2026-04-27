@@ -27,6 +27,7 @@ Current milestone:
 - Claude Code hooks for prompt hydration and turn persistence
 - unit-tested hook runtime paths for no-op, recall, and persistence flows
 - project-local workflow skills for feature delivery, review, and git shipping
+- lightweight Playwright browse runtime for page inspection and screenshots
 
 ## Adapter Surface
 
@@ -56,6 +57,25 @@ The workflow layer lives in `skills/` instead of project-specific slash commands
 - `skills/feature-development` for discovery, design, implementation, and verification
 - `skills/pr-review` for bug-focused diff and PR review
 - `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
+- `skills/browser-dogfood` for real-page inspection, screenshots, and smoke QA
+
+## Browse Layer
+
+The browse runtime is intentionally small and stateless. It supports:
+
+- rendered text extraction
+- HTML extraction
+- link enumeration
+- full-page or selector-scoped screenshots
+
+Commands:
+
+```bash
+bun run browse -- text --url https://example.com
+bun run browse -- links --url https://example.com
+bun run browse -- screenshot --url https://example.com --path .agent-kernel/artifacts/example.png
+bun run verify:browse
+```
 
 ## Environment
 
@@ -81,6 +101,7 @@ HONCHO_ASSISTANT_NAME="Agent Kernel"
 bun run check
 bun run build
 bun test
+bun run verify:browse
 bun run verify:honcho
 ```
 

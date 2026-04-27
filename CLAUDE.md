@@ -22,6 +22,7 @@
 - Use `$feature-development` for non-trivial features, workflow extensions, and multi-file behavior changes.
 - Use `$git-ship` for commit, push, PR, and stale branch cleanup requests.
 - Use `$pr-review` when the user asks for review, audit, or a risk pass on a diff.
+- Use `$browser-dogfood` when the user asks to inspect a real page, verify rendered output, or capture browser evidence.
 - Prefer extending `skills/` over adding project-specific slash commands.
 
 ## Build
@@ -30,4 +31,5 @@
 bun run check
 bun run build
 bun test
+bun run verify:browse
 ```

@@ -3,7 +3,7 @@ import { createHonchoClient } from "../memory/honcho.js";
 async function main() {
   const client = createHonchoClient();
 
-  const workspaces = await client.getWorkspaces();
+  const workspaces = await client.workspaces();
   const metadata = await client.getMetadata();
 
   console.log(
@@ -11,7 +11,7 @@ async function main() {
       {
         ok: true,
         workspaceId: client.workspaceId,
-        visibleWorkspaces: workspaces,
+        visibleWorkspaces: workspaces.items,
         metadataKeys: Object.keys(metadata),
       },
       null,

@@ -16,6 +16,8 @@ export interface AnthropicContextSnapshot {
   sessionId: string;
   messageCount: number;
   summary: string | null;
+  peerRepresentation: string | null;
+  peerCard: string[] | null;
   messages: Array<{
     role: string;
     content: string;
@@ -67,11 +69,11 @@ export async function recordTurn(
 
   const userMessage = user.message(turn.userMessage, {
     metadata: turn.metadata,
-    created_at: turn.createdAt,
+    createdAt: turn.createdAt,
   });
   const assistantMessage = assistant.message(turn.assistantMessage, {
     metadata: turn.metadata,
-    created_at: turn.createdAt,
+    createdAt: turn.createdAt,
   });
 
   await session.addMessages([userMessage, assistantMessage]);
@@ -86,6 +88,8 @@ function toAnthropicSnapshot(
     sessionId,
     messageCount: context.length,
     summary: context.summary?.content ?? null,
+    peerRepresentation: context.peerRepresentation,
+    peerCard: context.peerCard,
     messages: context.toAnthropic(assistantId),
   };
 }
@@ -101,9 +105,10 @@ export async function getAnthropicContext(
 ): Promise<AnthropicContextSnapshot> {
   const client = createHonchoClient(env);
   const session = await client.session(params.sessionId);
-  const context = await session.getContext({
+  const context = await session.context({
     summary: params.summary ?? true,
     tokens: params.tokens,
+    peerPerspective: params.assistantId,
   });
 
   return toAnthropicSnapshot(params.sessionId, context, params.assistantId);
@@ -116,10 +121,12 @@ export async function getSessionWorkingMemory(
     targetPeerId?: string;
   },
   env: HonchoEnv = loadHonchoEnv(),
-): Promise<Record<string, unknown>> {
+): Promise<string> {
   const client = createHonchoClient(env);
   const session = await client.session(params.sessionId);
-  return session.workingRep(params.peerId, params.targetPeerId);
+  return session.representation(params.peerId, {
+    target: params.targetPeerId,
+  });
 }
 
 export async function askUserModel(
@@ -133,7 +140,7 @@ export async function askUserModel(
   const client = createHonchoClient(env);
   const user = await client.peer(params.userId);
   return user.chat(params.query, {
-    sessionId: params.sessionId,
+    session: params.sessionId,
   });
 }
 
@@ -145,8 +152,20 @@ export async function waitForDerivedMemory(
   env: HonchoEnv = loadHonchoEnv(),
 ): Promise<void> {
   const client = createHonchoClient(env);
-  await client.pollDeriverStatus({
-    sessionId: params.sessionId,
-    timeoutMs: params.timeoutMs,
-  });
+  const timeoutMs = params.timeoutMs ?? 30000;
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const status = params.sessionId
+      ? await client.queueStatus({ session: params.sessionId })
+      : await client.queueStatus();
+
+    if (status.pendingWorkUnits === 0 && status.inProgressWorkUnits === 0) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  throw new Error("Timed out waiting for Honcho queue to settle");
 }

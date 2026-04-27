@@ -70,3 +70,14 @@ HONCHO_ASSISTANT_NAME="Agent Kernel"
 bun run check
 bun run verify:honcho
 ```
+
+## Local Honcho CLI
+
+For direct smoke tests without waiting for Claude Code hooks:
+
+```bash
+bun run honcho -- record --session demo-1 --user-message "hello" --assistant-message "hi"
+bun run honcho -- context --session demo-1 --tokens 1500
+bun run honcho -- working-rep --session demo-1 --peer quangdang
+bun run honcho -- ask --user-id quangdang --query "What does this user care about?"
+```

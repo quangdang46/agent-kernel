@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && bun run src/hooks/user-prompt-submit.ts",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-$PWD}\" && bun run src/hooks/user-prompt-submit.ts",
             "timeout": 30
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && bun run src/hooks/stop.ts",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-$PWD}\" && bun run src/hooks/stop.ts",
             "timeout": 60
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && bun run src/hooks/stop-failure.ts",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-$PWD}\" && bun run src/hooks/stop-failure.ts",
             "timeout": 15
           }
         ]

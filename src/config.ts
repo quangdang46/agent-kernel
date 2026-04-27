@@ -2,7 +2,7 @@ import { z } from "zod";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const honchoEnvironmentSchema = z.enum(["demo", "local", "production"]);
+const honchoEnvironmentSchema = z.enum(["local", "production"]);
 
 const honchoEnvSchema = z.object({
   HONCHO_API_KEY: z.string().min(1, "HONCHO_API_KEY is required"),

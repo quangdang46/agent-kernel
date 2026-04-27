@@ -25,6 +25,7 @@ Current milestone:
 - TypeScript memory adapter scaffold
 - local setup and verification scripts
 - Claude Code hooks for prompt hydration and turn persistence
+- unit-tested hook runtime paths for no-op, recall, and persistence flows
 
 ## Adapter Surface
 
@@ -45,6 +46,7 @@ Project hooks live in [.claude/settings.json](./.claude/settings.json).
 - `StopFailure` clears local state so interrupted runs do not poison the next turn
 
 Ephemeral hook state is stored under `.agent-kernel/state/` and is gitignored.
+Session state files are hashed before being written so Claude session IDs do not leak into filesystem paths.
 
 ## Environment
 
@@ -68,6 +70,8 @@ HONCHO_ASSISTANT_NAME="Agent Kernel"
 
 ```bash
 bun run check
+bun run build
+bun test
 bun run verify:honcho
 ```
 

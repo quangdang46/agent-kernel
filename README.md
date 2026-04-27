@@ -28,7 +28,7 @@ Current milestone:
 - unit-tested hook runtime paths for no-op, recall, and persistence flows
 - project-local workflow skills for feature delivery, review, and git shipping
 - pre-implementation spec review workflow for plan tightening
-- lightweight Playwright browse runtime for page inspection and screenshots
+- agent-browser-backed browse workflow for live page automation
 - project-local agent profiles for exploration, design, review, and spec checks
 - bounded autoloop workflow for measured experiment runs
 
@@ -61,7 +61,7 @@ The workflow layer lives in `skills/` instead of project-specific slash commands
 - `skills/spec-review` for implementation-readiness review before code is written
 - `skills/pr-review` for bug-focused diff and PR review
 - `skills/git-ship` for commit, push, PR, and stale branch cleanup workflows
-- `skills/browser-dogfood` for real-page inspection, screenshots, and smoke QA
+- `skills/agent-browser` for live page inspection, interaction, and screenshots
 - `skills/autoloop` for metric-driven experiment loops with explicit guardrails
 
 ## Team Layer
@@ -84,20 +84,28 @@ The research layer is intentionally bounded:
 
 ## Browse Layer
 
-The browse runtime is intentionally small and stateless. It supports:
+The browse layer uses `agent-browser`, which provides:
 
-- rendered text extraction
-- HTML extraction
-- link enumeration
-- full-page or selector-scoped screenshots
+- page navigation through a persistent browser session
+- `snapshot -i` refs for low-token interaction with live pages
+- direct `click`, `fill`, `wait`, `get`, and `screenshot` commands
+- project-local screenshot defaults under `.agent-kernel/artifacts/`
 
 Commands:
 
 ```bash
-bun run browse -- text --url https://example.com
-bun run browse -- links --url https://example.com
-bun run browse -- screenshot --url https://example.com --path .agent-kernel/artifacts/example.png
+bun run browse -- open https://example.com
+bun run browse -- snapshot -i
+bun run browse -- get text body
+bun run browse -- screenshot example.png
+bun run browse -- close
 bun run verify:browse
+```
+
+For deeper usage patterns:
+
+```bash
+bun run browse -- skills get core --full
 ```
 
 ## Environment

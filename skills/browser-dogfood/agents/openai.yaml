@@ -1,4 +1,0 @@
-interface:
-  display_name: "Browser Dogfood"
-  short_description: "Open pages, inspect state, capture evidence"
-  default_prompt: "Use $browser-dogfood to verify a page, inspect the rendered state, and capture screenshots or text evidence."

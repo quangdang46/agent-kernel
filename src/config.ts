@@ -3,23 +3,6 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const honchoEnvironmentSchema = z.enum(["local", "production"]);
-const browseBooleanSchema = z
-  .union([z.boolean(), z.string()])
-  .transform((value) => {
-    if (typeof value === "boolean") {
-      return value;
-    }
-
-    const normalized = value.trim().toLowerCase();
-    if (["1", "true", "yes", "on"].includes(normalized)) {
-      return true;
-    }
-    if (["0", "false", "no", "off"].includes(normalized)) {
-      return false;
-    }
-
-    throw new Error(`Invalid boolean value: ${value}`);
-  });
 
 const honchoEnvSchema = z.object({
   HONCHO_API_KEY: z.string().min(1, "HONCHO_API_KEY is required"),
@@ -30,20 +13,11 @@ const honchoEnvSchema = z.object({
   HONCHO_ASSISTANT_NAME: z.string().min(1).default("Agent Kernel"),
 });
 
-const browseConfigSchema = z.object({
-  BROWSE_HEADLESS: browseBooleanSchema.default(true),
-  BROWSE_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
-  BROWSE_VIEWPORT_WIDTH: z.coerce.number().int().positive().default(1280),
-  BROWSE_VIEWPORT_HEIGHT: z.coerce.number().int().positive().default(720),
-  BROWSE_ARTIFACT_DIR: z.string().min(1).default(".agent-kernel/artifacts"),
-});
-
 export type HonchoEnv = z.infer<typeof honchoEnvSchema>;
 export type HonchoNames = Pick<
   HonchoEnv,
   "HONCHO_WORKSPACE_ID" | "HONCHO_ENVIRONMENT" | "HONCHO_BASE_URL" | "HONCHO_USER_NAME" | "HONCHO_ASSISTANT_NAME"
 >;
-export type BrowseConfig = z.infer<typeof browseConfigSchema>;
 
 function parseDotEnvFile(filePath: string): Record<string, string> {
   if (!existsSync(filePath)) {
@@ -107,10 +81,4 @@ export function loadHonchoEnvIfAvailable(
     return null;
   }
   return honchoEnvSchema.parse(merged);
-}
-
-export function loadBrowseConfig(
-  env: NodeJS.ProcessEnv = process.env,
-): BrowseConfig {
-  return browseConfigSchema.parse(loadMergedEnv(env));
 }

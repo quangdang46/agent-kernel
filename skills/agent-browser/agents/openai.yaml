@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Browser"
+  short_description: "Use agent-browser for live browser automation"
+  default_prompt: "Use $agent-browser to inspect a page, interact with elements, and capture browser evidence."

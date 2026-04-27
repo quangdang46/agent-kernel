@@ -8,14 +8,14 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc --noEmit -p tsconfig.json",
     "test": "bun test",
-    "browse": "bun run src/scripts/browse-cli.ts",
-    "verify:browse": "bun run src/scripts/verify-browse.ts",
+    "browse": "agent-browser --screenshot-dir .agent-kernel/artifacts --max-output 12000",
+    "verify:browse": "agent-browser doctor",
     "verify:honcho": "bun run src/scripts/verify-honcho.ts",
     "honcho": "bun run src/scripts/honcho-cli.ts"
   },
   "dependencies": {
     "@honcho-ai/sdk": "2.1.1",
-    "playwright": "1.59.1",
+    "agent-browser": "0.26.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

@@ -4,7 +4,6 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import {
-  loadBrowseConfig,
   loadHonchoEnv,
   loadHonchoEnvIfAvailable,
   loadHonchoNames,
@@ -69,21 +68,5 @@ describe("config loading", () => {
     expect(config.HONCHO_API_KEY).toBe("test-key");
     expect(config.HONCHO_WORKSPACE_ID).toBe("workspace-dotenv");
     expect(config.HONCHO_USER_NAME).toBe("dotenv-user");
-  });
-
-  test("parses browse config with boolean and numeric env values", () => {
-    const config = loadBrowseConfig({
-      BROWSE_HEADLESS: "false",
-      BROWSE_TIMEOUT_MS: "22000",
-      BROWSE_VIEWPORT_WIDTH: "1440",
-      BROWSE_VIEWPORT_HEIGHT: "900",
-      BROWSE_ARTIFACT_DIR: ".agent-kernel/browser-artifacts",
-    });
-
-    expect(config.BROWSE_HEADLESS).toBe(false);
-    expect(config.BROWSE_TIMEOUT_MS).toBe(22000);
-    expect(config.BROWSE_VIEWPORT_WIDTH).toBe(1440);
-    expect(config.BROWSE_VIEWPORT_HEIGHT).toBe(900);
-    expect(config.BROWSE_ARTIFACT_DIR).toBe(".agent-kernel/browser-artifacts");
   });
 });

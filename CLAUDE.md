@@ -7,6 +7,7 @@
 - Claude Code compatibility first
 - Bun and TypeScript first
 - Project-local workflow skills instead of slash commands
+- `agent-browser` is the browse surface for live web automation
 - Bounded experiment loops instead of long-running autonomous daemons
 
 ## Memory Rules
@@ -24,7 +25,7 @@
 - Use `$spec-review` when the user wants a plan or spec tightened before implementation.
 - Use `$git-ship` for commit, push, PR, and stale branch cleanup requests.
 - Use `$pr-review` when the user asks for review, audit, or a risk pass on a diff.
-- Use `$browser-dogfood` when the user asks to inspect a real page, verify rendered output, or capture browser evidence.
+- Use `$agent-browser` when the user asks to inspect a real page, click through a flow, fill a form, or capture browser evidence.
 - Use `$autoloop` when the user wants measured optimization or repeated experiments against a clear metric.
 - Prefer extending `skills/` over adding project-specific slash commands.
 
